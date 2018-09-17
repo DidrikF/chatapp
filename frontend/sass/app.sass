@@ -1,0 +1,210 @@
+@import 'mixins'
+// Fonts
+@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600")
+@import url("https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700")
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700)
+
+// Variables
+
+
+@import 'variables'
+
+@import 'helpers'
+
+@import 'components/application'
+
+
+
+div
+  // border: 0.5px solid grey
+  box-sizing: border-box
+
+$green: #86BB71
+$blue: #94C2ED
+$orange: #E38968
+$grayy: #282A31
+$grayy2: #382A41
+$lightGrey: #535862
+$whiteIsh: #F2F5F8
+
+body
+  font: 14px/20px "Lato", Arial, sans-serif
+  width: 100%
+  height: 100%
+  background: linear-gradient(45deg, #e66465, #9198e5)
+  border: 1px solid blue
+  
+main 
+  border-radius: 10px
+  width: 800px
+  // border: 1px solid grey
+  margin: 20px auto
+  height: 600px
+  
+ 
+::-webkit-scrollbar
+  background-color: $grayy
+  width: 6px
+::-webkit-scrollbar-thumb
+  background-color: $lightGrey
+  border-radius: 2px
+  width: 5px
+ 
+.menu
+  float: left
+  width: 30%
+  height: 100%
+  background: $grayy
+  overflow: hidden
+  color: $whiteIsh
+  overflow-y: scroll
+  border-radius: 10px 0 0 10px
+  
+  .heading
+    padding: 10px 0 10px 50px
+    font-weight: 400
+    letter-spacing: 0.5px
+    border-bottom: 1px solid darkgrey
+    border-top: 1px solid darkgrey
+  .room:hover, .person:hover
+    //background: #9198e5 //$lightGrey
+    background: linear-gradient(45deg, #9198e5, #e66465)
+  .room, .person
+    padding: 10px 0 10px 20px
+    position: relative
+    cursor: pointer
+    img
+      border-radius: 100%
+      width: 50px
+      height: 50px
+      display: inline-block
+      border: 3px solid $lightGrey
+    .name
+      display: inline-block
+      position: absolute
+      line-height: 50px
+      width: 150px
+      padding-left: 20px
+      font-size: 1.1em
+      
+.chat
+  float: right
+  width: 70%
+  height: 100%
+  background: $whiteIsh
+  position: relative
+  border-radius: 0 10px 10px 0
+  .with
+    width: 100%
+    height: 15%
+    padding: 10px 0 10px 40px
+    position: relative
+    img
+      width: 65px
+      height: 65px
+      border-radius: 100%
+      border: 4px solid $green
+    .name
+      position: absolute
+      display: inline-block
+      line-height: 70px
+      width: 300px
+      padding-left: 25px
+      font-size: 1.2em
+      font-weight: 600
+      letter-spacing: 0.5px
+  
+  ::-webkit-scrollbar
+      background-color: $whiteIsh
+      width: 6px
+  ::-webkit-scrollbar-thumb
+    background-color: $lightGrey
+    border-radius: 2px
+    width: 5px
+      
+  .history
+    overflow-y: scroll
+    height: 50%
+    padding: 30px
+    border-top: 0.5px solid $lightGrey
+    border-bottom: 0.5px solid $lightGrey
+    .message 
+      color: white
+      padding: 18px 20px
+      line-height: 26px
+      font-size: 16px
+      border-radius: 7px
+      margin-bottom: 15px
+      width: 90%
+      position: relative
+      
+      &:after 
+        bottom: 100%
+        left: 7%
+        border: solid transparent
+        content: " "
+        height: 0
+        width: 0
+        position: absolute
+        pointer-events: none
+        border-bottom-color: $green
+        border-width: 10px
+        margin-left: -10px
+    .my-message
+      background: $green
+        
+    .other-message
+      background: $blue
+      &:after
+        border-bottom-color: $blue
+        left: 93%
+    .other 
+      color: $green
+    .me
+      color: $blue
+    .message-info
+      margin-bottom: 10px
+      i
+        margin: 0 5px
+      .time
+        margin-left: 10px
+        opacity: 0.5
+      
+    .message-info-me
+      margin-bottom: 10px
+      .name
+        float: right
+        margin-right: 55px
+        i
+          margin: 0 5px
+      .time
+        margin-left: 265px
+        opacity: 0.5
+  .input
+    background: white
+    position: absolute
+    bottom: 0
+    padding: 30px
+    width: 100%
+    height: 35%
+    background: $whiteIsh
+    border-radius: 0 0 10px 0
+    
+    textarea
+      width: 90% // what is wrong here
+      margin: 0 auto
+      display: block
+      height: 5em
+      font-size: 1.2em
+      resize: none
+      border-radius: 10px
+      padding: 15px
+      
+    .button
+      font-size: 1.3em
+      color: $blue
+      font-weight: 600
+      float: right
+      margin: 10px 15px 0 0
+      cursor: pointer
+  
