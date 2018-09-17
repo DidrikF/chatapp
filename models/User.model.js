@@ -13,9 +13,12 @@ var UserSchema = mongoose.Schema({
 		type: String,
 		required: [true, "Password is required"], //Is alleady a hash
 	},
+	image: {
+		type: String,
+	},
 	ownedRooms: [{type: Schema.ObjectId, ref: "Room"}],
 	inRooms: [{type: Schema.ObjectId, ref: "Room"}],
-	friends: [{type: Schema.ObjectId, ref: "User"}],
+	// friends: [{type: Schema.ObjectId, ref: "User"}],
 	messages: [
 		{
 			sender: {type: Schema.ObjectId, ref: 'User'},

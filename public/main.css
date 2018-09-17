@@ -39,12 +39,11 @@
 div {
   box-sizing: border-box; }
 
-body {
+body, html {
   font: 14px/20px "Lato", Arial, sans-serif;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, #e66465, #9198e5);
-  border: 1px solid blue; }
+  background: linear-gradient(45deg, #e66465, #9198e5); }
 
 main {
   border-radius: 10px;
@@ -76,25 +75,34 @@ main {
     letter-spacing: 0.5px;
     border-bottom: 1px solid darkgrey;
     border-top: 1px solid darkgrey; }
-  .menu .room:hover, .menu .person:hover {
+  .menu .element:hover {
     background: linear-gradient(45deg, #9198e5, #e66465); }
-  .menu .room, .menu .person {
+  .menu .element {
     padding: 10px 0 10px 20px;
     position: relative;
     cursor: pointer; }
-    .menu .room img, .menu .person img {
+    .menu .element img {
       border-radius: 100%;
       width: 50px;
       height: 50px;
       display: inline-block;
       border: 3px solid #535862; }
-    .menu .room .name, .menu .person .name {
+    .menu .element .name {
       display: inline-block;
       position: absolute;
       line-height: 50px;
       width: 150px;
       padding-left: 20px;
       font-size: 1.1em; }
+  .menu .create-room {
+    color: black; }
+  .menu .options .option {
+    padding: 10px 0 10px 20px;
+    cursor: pointer; }
+    .menu .options .option span {
+      margin-left: 10px; }
+  .menu .options .option:hover {
+    background: linear-gradient(45deg, #9198e5, #e66465); }
 
 .chat {
   float: right;
@@ -144,46 +152,44 @@ main {
       margin-bottom: 15px;
       width: 90%;
       position: relative; }
-      .chat .history .message:after {
-        bottom: 100%;
-        left: 7%;
-        border: solid transparent;
-        content: " ";
-        height: 0;
-        width: 0;
-        position: absolute;
-        pointer-events: none;
-        border-bottom-color: #86BB71;
-        border-width: 10px;
-        margin-left: -10px; }
-    .chat .history .my-message {
-      background: #86BB71; }
-    .chat .history .other-message {
-      background: #94C2ED; }
-      .chat .history .other-message:after {
-        border-bottom-color: #94C2ED;
-        left: 93%; }
-    .chat .history .other {
-      color: #86BB71; }
-    .chat .history .me {
-      color: #94C2ED; }
-    .chat .history .message-info {
+    .chat .history .message-from-other:after {
+      bottom: 100%;
+      left: 7%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      border-bottom-color: #86BB71;
+      border-width: 10px;
+      margin-left: -10px; }
+    .chat .history .message-from-other .message-info {
       margin-bottom: 10px; }
-      .chat .history .message-info i {
+      .chat .history .message-from-other .message-info i {
+        color: #94C2ED;
         margin: 0 5px; }
-      .chat .history .message-info .time {
+      .chat .history .message-from-other .message-info .time {
         margin-left: 10px;
         opacity: 0.5; }
-    .chat .history .message-info-me {
-      margin-bottom: 10px; }
-      .chat .history .message-info-me .name {
-        float: right;
-        margin-right: 55px; }
-        .chat .history .message-info-me .name i {
-          margin: 0 5px; }
-      .chat .history .message-info-me .time {
-        margin-left: 265px;
-        opacity: 0.5; }
+    .chat .history .message-from-other .message-body {
+      background: #94C2ED; }
+      .chat .history .message-from-other .message-body:after {
+        border-bottom-color: #94C2ED;
+        left: 93%; }
+    .chat .history .message-from-me {
+      background: #86BB71; }
+      .chat .history .message-from-me .message-info {
+        margin-bottom: 10px; }
+        .chat .history .message-from-me .message-info .name {
+          float: right;
+          margin-right: 55px; }
+          .chat .history .message-from-me .message-info .name i {
+            color: #86BB71;
+            margin: 0 5px; }
+        .chat .history .message-from-me .message-info .time {
+          margin-left: 265px;
+          opacity: 0.5; }
   .chat .input {
     background: white;
     position: absolute;

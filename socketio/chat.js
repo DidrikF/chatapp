@@ -85,9 +85,9 @@ module.exports = function (io) {
 			userIdsPromise
 			.then(function (onlineUserIds) {
 				return Promise.all([
-					Room.find({private: false, status: "available", owner: {$ne: socket.request.user._id}}).populate('people', 'username').populate('invitedPeople', 'username').populate('owner', 'username').exec(),
-					Room.find({owner: socket.request.user._id}).populate('people', 'username').populate('invitedPeople', 'username').populate('owner', 'username').exec(),
-					User.find({'_id': { $in: onlineUserIds }}, ['username']).exec()
+					Room.find({owner: {$ne: socket.request.user._id}}).populate('people', 'username').populate('owner', 'username').exec(),
+					Room.find({owner: socket.request.user._id}).populate('people', 'username').populate('owner', 'username').exec(),
+					User.find({'_id': { $in: onlineUserIds }}, ['username', 'image']).exec()
 				])
 			})
 			.then((results) => {
@@ -170,7 +170,7 @@ module.exports = function (io) {
 			.then(function (room) {
 				return Promise.all([
 					User.findById(socket.request.user._id).exec(),
-					Room.findById(room._id).populate('people', 'username').populate('invitedPeople', 'username').populate('owner', 'username').exec()
+					Room.findById(room._id).populate('people', 'username').populate('owner', 'username').exec()
 				])
 			})
 			.then(function(userAndRoom) {
@@ -269,10 +269,13 @@ module.exports = function (io) {
 					name: input.name,
 					owner: socket.request.user._id,
 					people: [],
+					image: input.image || "https://api.adorable.io/avatars/140/abott@adorable.png"
+					/*
 					peopleLimit: input.peopleLimit,
 					status: input.status,
 					private: input.private,
 					invitedPeople: []
+					*/
 				})
 
 				return newRoom.save()

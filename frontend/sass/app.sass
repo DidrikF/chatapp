@@ -27,12 +27,11 @@ $grayy2: #382A41
 $lightGrey: #535862
 $whiteIsh: #F2F5F8
 
-body
+body, html
   font: 14px/20px "Lato", Arial, sans-serif
   width: 100%
   height: 100%
   background: linear-gradient(45deg, #e66465, #9198e5)
-  border: 1px solid blue
   
 main 
   border-radius: 10px
@@ -66,10 +65,10 @@ main
     letter-spacing: 0.5px
     border-bottom: 1px solid darkgrey
     border-top: 1px solid darkgrey
-  .room:hover, .person:hover
+  .element:hover
     //background: #9198e5 //$lightGrey
     background: linear-gradient(45deg, #9198e5, #e66465)
-  .room, .person
+  .element
     padding: 10px 0 10px 20px
     position: relative
     cursor: pointer
@@ -86,7 +85,25 @@ main
       width: 150px
       padding-left: 20px
       font-size: 1.1em
+  
+  .create-room
+    color: black
+    input
       
+  
+  .options
+
+    .option
+      padding: 10px 0 10px 20px
+      cursor: pointer
+      span
+        margin-left: 10px
+    .option:hover
+      background: linear-gradient(45deg, #9198e5, #e66465)
+
+
+
+
 .chat
   float: right
   width: 70%
@@ -128,6 +145,8 @@ main
     padding: 30px
     border-top: 0.5px solid $lightGrey
     border-bottom: 0.5px solid $lightGrey
+    
+    
     .message 
       color: white
       padding: 18px 20px
@@ -137,7 +156,8 @@ main
       margin-bottom: 15px
       width: 90%
       position: relative
-      
+
+    .message-from-other
       &:after 
         bottom: 100%
         left: 7%
@@ -150,36 +170,36 @@ main
         border-bottom-color: $green
         border-width: 10px
         margin-left: -10px
-    .my-message
-      background: $green
-        
-    .other-message
-      background: $blue
-      &:after
-        border-bottom-color: $blue
-        left: 93%
-    .other 
-      color: $green
-    .me
-      color: $blue
-    .message-info
-      margin-bottom: 10px
-      i
-        margin: 0 5px
-      .time
-        margin-left: 10px
-        opacity: 0.5
-      
-    .message-info-me
-      margin-bottom: 10px
-      .name
-        float: right
-        margin-right: 55px
+      .message-info
+        margin-bottom: 10px
         i
+          color: $blue
           margin: 0 5px
-      .time
-        margin-left: 265px
-        opacity: 0.5
+        .time
+          margin-left: 10px
+          opacity: 0.5
+      .message-body
+        background: $blue
+        &:after
+          border-bottom-color: $blue
+          left: 93%
+    
+    .message-from-me
+      background: $green
+      .message-info
+        margin-bottom: 10px
+        .name
+          float: right
+          margin-right: 55px
+          i
+            color: $green
+            margin: 0 5px
+        .time
+          margin-left: 265px
+          opacity: 0.5
+
+    
+    
   .input
     background: white
     position: absolute

@@ -14,6 +14,10 @@ var RoomSchema = mongoose.Schema({
 		required: [true, "Id is required"], //Is alleady a hash
 	},
 	people: [{type: Schema.ObjectId, ref: 'User'}],
+	image: {
+		type: String
+	}
+	/*
 	peopleLimit: {
 		type: Number,
 		default: 30
@@ -28,6 +32,7 @@ var RoomSchema = mongoose.Schema({
 		required: [true, "Privacy settings is required"]
 	},
 	invitedPeople: [{type: Schema.ObjectId, ref: 'User'}]
+	*/
 })
 
 

@@ -2,7 +2,7 @@
 
 <main>
   <aside class="menu">
-
+    <!--
     <div class="heading">
       YOUR ROOMS
     </div>
@@ -10,26 +10,38 @@
       <div class="room" v-bind:key="index" v-for="(room, index) in ownedRooms" @click="toggleRoom(room)">
         <img v-bind:src="room.image" alt="Room image not available">
         <div class="name">{{ room.name }}</div>
-      </div>
+      </div>     
     </div>
+    -->
 
     <div class="heading">
-      PUBLIC ROOMS
+      ROOMS
     </div>
-    <div class="elements">
-      <div class="room" v-bind:key="index" v-for="(room, index) in publicRooms" @click="toggleRoom(room)">
+    <div>
+      <div class="element" v-bind:key="index" v-for="(room, index) in rooms" @click="toggleRoom(room)">
         <img v-bind:src="room.image" alt="Room image not available">
         <div class="name">{{ room.name }}</div>
       </div>
+    </div>
+    <div class="heading">
+      CEATE ROOM
+    </div>
+    <div class="create-room">
+      <select name="avatar" id="avatar" v-model="newRoom.image">
+        <option value="https://api.adorable.io/avatars/140/abott@adorable.png"><img src="https://api.adorable.io/avatars/140/abott@adorable.png" alt="">Avatar 1</option>
+        <option value="https://api.adorable.io/avatars/140/abott@adorable.png"><img src="https://api.adorable.io/avatars/140/abott@adorable.png" alt="">Avatar 2</option>
+      </select>
+      <input type="text" v-model="newRoom.name" @keyup.enter="createRoom">
+      <a class="button" @click="createRoom">Add</a>
     </div>
     
     <div class="heading">
       BOTS
     </div>
     <div class="section">
-      <div class="person" v-bind:key="index" v-for="(bot, index) in bots" @click="toggleWhisper(bot)">
+      <div class="element" v-bind:key="index" v-for="(bot, index) in bots" @click="toggleWhisper(bot)">
         <img v-bind:src="bot.image" alt="No avatar">
-        <div class="name">{{ bot.name }}</div>
+        <div class="name">{{ bot.username }}</div>
       </div>
     </div>
 
@@ -38,18 +50,15 @@
       USERS
     </div>
     <div class="section">
-      <div class="person" v-bind:key="index" v-for="(user, index) in onlineUsers">
+      <div class="element" v-bind:key="index" v-for="(user, index) in onlineUsers" @click="toggleWhisper(user)">
         <img v-bind:src="user.image" alt="No avatar">
-        <div class="name">{{ user.name }}</div>
+        <div class="name">{{ user.username }}</div>
       </div>
     </div>
 
     <div class="options">
       <div class="heading">
         OPTIONS
-      </div>
-      <div class="option">
-        <div class="name"><i class="fas fa-users"></i><span>Create Room</span></div>
       </div>
       <div class="option">
         <div class="name"><i class="fas fa-user"></i><span>Your Profile</span></div>
@@ -60,29 +69,6 @@
     </div>
   </aside>
 
-  <div class="create-room">
-    <div class="col-sm-12" v-if="newRoom.toggled">
-      <div class="input-group">
-        <label>Name: </label>
-        <input type="text" class="form-control" v-model="newRoom.name">
-      </div>
-      <div class="input-group">
-        <label>Status: </label>
-        <input type="text" class="form-control" v-model="newRoom.status">
-      </div>
-      <div class="input-group">
-        <label>Private: </label>
-        <input type="text" class="form-control" v-model="newRoom.private">
-      </div>
-      <div class="input-group">
-        <label>Max amount of people: </label>
-        <input type="text" class="form-control" v-model="newRoom.peopleLimit">
-      </div>
-      <button @click="createRoom">Create Room</button>
-      <button @click="resetNewRoom">Reset From</button>
-    </div>
-  </div>
-
   <!--  Whisper Chat -->
   <div class="chat">
     <div v-if="activeWhisper">
@@ -92,7 +78,7 @@
       </div>
 
       <div class="history">
-        <div class="message-container" v-bind:key="index" v-for="(message, index) in whisperChatHistoryFiltered">
+        <div class="message-container" v-bind:key="index" v-for="(message, index) in whisperChatHistory">
           
           <!-- FROM OTHER PARTY -->
           <div class="message-from-other" v-if="message.sender.username !== user.username">
@@ -143,23 +129,65 @@ import { mapMutations, mapActions, mapGetters, mapState } from "vuex";
 export default {
   data() {
     return {
-      publicRooms: [],
-      ownedRooms: [],
-      onlineUsers: [],
-
+      rooms: [{
+        name: "Gaming",
+        image: "https://api.adorable.io/avatars/140/abott@adorable.png",
+        owner: "EmilieF"
+      },
+      {
+        name: "Work",
+        image: "https://api.adorable.io/avatars/140/abott@adorable.png",
+        owner: "DidrikFleich"
+      },
+      {
+        name: "Coding",
+        image: "https://api.adorable.io/avatars/140/abott@adorable.png",
+        owner: "DidrikFleisch"
+      }],
+      bots: [
+        {
+          username: "Ellie",
+          image: "https://api.adorable.io/avatars/140/abott@adorable.png"  
+        },
+        {
+          username: "John",
+          image: "https://api.adorable.io/avatars/140/abott@adorable.png",
+        }
+      ],
+      onlineUsers: [
+        {
+          username: "EmilieF",
+          image: "https://api.adorable.io/avatars/140/abott@adorable.png"
+        }, 
+        {
+          username: "DidrikF",
+          image: "https://api.adorable.io/avatars/140/abott@adorable.png"
+        }
+      ],
       activeRoom: null,
       activeWhisper: null,
 
       roomChatHistories: {},
-      whisperChatHistory: [],
+      whisperChatHistory: [
+        {
+          recipient: "DidrikF",
+          sender: "EmilieF",
+          body: "Hei på deg!",
+          time: new Date()
+        },
+        {
+          recipient: "EmilieF",
+          sender: "DidrikF",
+          body: "Så hyggelig",
+          time: new Date()
+        }
+      ],
 
       messageInput: "",
       newRoom: {
         toggled: false,
         name: "",
-        status: "",
-        private: true,
-        peopleLimit: 0
+        image: "",
       },
       message: ""
     };
@@ -229,13 +257,6 @@ export default {
     toggleCreateRoom() {
       this.newRoom.toggled = !this.newRoom.toggled;
     },
-    resetNewRoom() {
-      this.newRoom.name = "";
-      this.newRoom.status = "";
-      this.newRoom.private = true;
-      this.newRoom.peopleLimit = 0;
-    },
-
     /* HELPERS */
     flashMessage(message) {
       this.message = message;
@@ -246,7 +267,7 @@ export default {
   },
   created() {
     //Vue will run all created() hooks when multiple is defined (remember one is defined via a vue mixin)
-    //this.$sockets["chat"].socket.connect()
+    this.$sockets["chat"].socket.connect()
     console.log("Chat created");
     this.$sockets["root"].socket.emit(
       "hello",
@@ -282,10 +303,10 @@ export default {
 
     //Associated with joinChat, in chat component created hook.
     publicRooms(publicRooms) {
-      this.publicRooms = publicRooms;
+      this.rooms = [...this.rooms, ...publicRooms];
     },
     ownedRooms(ownedRooms) {
-      this.ownedRooms = ownedRooms;
+      this.rooms = [...this.rooms, ...ownedRooms];
     },
     onlineUsers(onlineUsers) {
       this.onlineUsers = onlineUsers;
@@ -363,13 +384,21 @@ export default {
     newRoom(data) {
       //{chatHistory: , room: }
       //console.log(data)
+      this.rooms.push(data.room)
+      /*
       if (data.room.owner._id === this.user._id) {
         this.ownedRooms.push(data.room);
       } else {
         this.publicRooms.push(data.room);
       }
+      */
     },
     roomRemoved(data) {
+      let indexToRemove = this.rooms.findIndex(function(room) {
+          return room._id === data.room._id;
+        });
+      if (indexToRemove > -1) this.rooms.splice(indexToRemove, 1)
+      /*
       console.log(data.room.owner._id === this.user._id);
       if (data.room.owner._id === this.user._id) {
         console.log("the user ownes the room that is being removed");
@@ -385,6 +414,7 @@ export default {
         });
         if (indexToRemove > -1) this.publicRooms.splice(indexToRemove, 1);
       }
+      */
     },
 
     newWhisperMessage(message) {
