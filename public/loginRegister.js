@@ -1988,7 +1988,7 @@ exports.default = {
         return {
             username: "",
             password: "",
-            avatars: ['livedemo/chatapp/images/bewer.jpg', 'livedemo/chatapp/images/cat.jpg', 'livedemo/chatapp/images/cow.jpg', 'livedemo/chatapp/images/donky.jpg', 'livedemo/chatapp/images/duck.jpg', 'livedemo/chatapp/images/lion.jpg', 'livedemo/chatapp/images/penguin.jpg', 'livedemo/chatapp/images/sea_lion.jpg'],
+            avatars: ['images/bewer.jpg', 'images/cat.jpg', 'images/cow.jpg', 'images/donky.jpg', 'images/duck.jpg', 'images/lion.jpg', 'images/penguin.jpg', 'images/sea_lion.jpg'],
             currentAvatar: 'images/bewer.jpg',
             index: 7
         };
@@ -2054,7 +2054,7 @@ exports.default = {
             password: "",
             selectedAvatar: 'images/bewer.jpg',
             errors: null,
-            avatars: ['livedemo/chatapp/images/bewer.jpg', 'livedemo/chatapp/images/cat.jpg', 'livedemo/chatapp/images/cow.jpg', 'livedemo/chatapp/images/donky.jpg', 'livedemo/chatapp/images/duck.jpg', 'livedemo/chatapp/images/lion.jpg', 'livedemo/chatapp/images/penguin.jpg', 'livedemo/chatapp/images/sea_lion.jpg']
+            avatars: ['images/bewer.jpg', 'images/cat.jpg', 'images/cow.jpg', 'images/donky.jpg', 'images/duck.jpg', 'images/lion.jpg', 'images/penguin.jpg', 'images/sea_lion.jpg']
         };
     },
 
