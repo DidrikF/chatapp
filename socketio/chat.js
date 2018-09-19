@@ -1,35 +1,34 @@
 let Room = require('../models/Room.model')
 let User = require('../models/User.model')
-let ChatHistory = require('../models/ChatHistory.model')
-let WhisperChatHistory = require('../models/WhisperChatHistory.model')
+let Message = require('../models/Message.model')
 var cookie = require('cookie')
 var { isEmpty } = require('lodash')
-
+const jwt = require('jsonwebtoken')
+const moment = require('moment')
 
 // How is error handling dealt with, next(error)
 
 
 module.exports = function (io) {
 	
-	chat = io.of('/chat') //	in/of are the same
+	chat = io.of('/chat')
 
-	// namespace middleware
 	chat.use((socket, next) => {
-		//console.log('Socket.io auth middleware called!')
-		var userId = null
-		if(!socket.request.headers.cookie) {
-			//console.log('No cookie associated with socket')
+		if(!socket.request.headers.cookie && !socket.request.headers.cookie['Authorization']) {
 		  	return next(new Error('Unauthorized'))	
 		}
+		var token = cookie.parse(socket.request.headers.cookie)['Authorization']
 
-		var parsedCookie = cookie.parse(socket.request.headers.cookie)['Authorization']
-		
-		//console.log(parsedCookie)
-
-		if(parsedCookie) {
-			//console.log('parsedCookie: ' + parsedCookie)
-			userId = parsedCookie.substring(parsedCookie.indexOf("\"")+1,parsedCookie.lastIndexOf("\"")) // Not very elegant
+		try {
+			var decoded = jwt.verify(token, process.env.JWT_SECRET)
+		} catch (error) {
+			// console.log('INVALID TOKEN IN UPGRADE REQUEST')
+			next(error)
+			return
 		}
+
+		// console.log(decoded)
+		const userId = decoded.data._id;
 
 		User.findById(userId).exec()
 		.then(function (user) {
@@ -40,548 +39,321 @@ module.exports = function (io) {
 			next(new Error('Unauthorized'))
 		})
 		.catch(function (error) {
-			console.log("socket.io /chat middleware: " + error)
+			console.log("Error in socket.io /chat middleware: " + error)
 		})
-
 	})
 
-	chat.on('connection', function (socket) {
-		console.log('# Socket ID: ' + socket.id + ' connected to /chat.')
 
-		// socket middleware
+	/*
+	chat.on('error', (error) => {
+		console.log(error)
+	})
+	*/
+
+	chat.on('connection', function (socket) {
+		// console.log('# Socket ID: ' + socket.id + ' connected to /chat.')
+
+		// MIDDLEWARE
 		socket.use(function (packet, next) {
-			//console.log(packet) //just [ 'need-auth', { message: 'I need to be authenticated' } ]
-			if(!socket.request.user) {
-				return next(new Error('Unauthorized'))
-			} else {
+			try {
+				var decoded = jwt.verify(packet[1].jwt, process.env.JWT_SECRET)
 				next()
+			} catch (error) {
+				console.log('INVALID TOKEN IN WEBSOCKET PACKET')
+				next(error)
 			}
 		})
 
-		User.findById(socket.request.user._id, ['username']).exec()
+		// TELL OTHER THE USER CONNECTED
+		User.findById(socket.request.user._id).exec()
 		.then(function(user) {
 			chat.emit("userCameOnline", user)	
 		})
-		
-		socket.on('joinChat', function (name, device) {
-			
-			console.log('#joinChat : ' + socket.request.user._id)
-			
-			var onlineUserIds = []
-
-			var userIdsPromise = new Promise(function (resolve, reject) {
-				chat.clients((error, clients) => {
-					if(error) reject(new Error("Unable to retreve chat namespaced clients"))
-
-					clients.forEach(function (clientId) {
-						if(chat.connected[clientId].request.user) {
-							onlineUserIds.push(chat.connected[clientId].request.user._id)
-						}
-					})
-					resolve(onlineUserIds)
-				})
-			})
-
-			userIdsPromise
-			.then(function (onlineUserIds) {
-				return Promise.all([
-					Room.find({owner: {$ne: socket.request.user._id}}).populate('people', 'username').populate('owner', 'username').exec(),
-					Room.find({owner: socket.request.user._id}).populate('people', 'username').populate('owner', 'username').exec(),
-					User.find({'_id': { $in: onlineUserIds }}, ['username', 'image']).exec()
-				])
-			})
-			.then((results) => {
-				socket.emit("publicRooms", results[0])
-				socket.emit("ownedRooms", results[1])
-				socket.emit("onlineUsers", results[2])
-
-				return User.findById(socket.request.user._id).exec()
-			})
-			.then(function (user) {
-				return ChatHistory.find({roomId: { $in: user.inRooms }}).populate('messages.sender', 'username').exec()
-			})
-			.then(function(chatHistoryEntries) {
-				let chatHistoryFormatted = {}
-				chatHistoryEntries.forEach(function(entry) {
-					chatHistoryFormatted[entry.roomId] = entry.messages
-				})
-
-				socket.emit("roomChatHistories", chatHistoryFormatted)
-			})
-			.catch(function(error) {
-				console.log("#joinChat Error: " + error)
-			})
-
-			//join user to rooms he is in (database persists this)
-			User.findById(socket.request.user._id).exec()
-			.then(function (user) {
-				return Room.find({_id: { $in: user.inRooms}}).exec()
-			})
-			.then(function (rooms) {
-				console.log("User socket supposed to join rooms...")
-				//console.log(rooms)
-				rooms.forEach(function (room) {
-					console.log(room.name)
-					socket.join(room.name, function(error) {
-						if(error) {
-							console.log(socket.request.user.username + ' failed to joind room ' + room.name)
-							return
-						}
-						console.log(socket.request.user.username + ' joined room ' + room.name)
-						//Tell member of the room that a user connected:
 
 
-					})
-				})
-			})
-			.catch(function(error) {
-				console.log("#joinChat Error: " + error)
-				//socket.emit("errorMessage", error)
-			})
+		// EVENT HANDLERS
 
-			//Send whisperChatHistory where user is either sender or recipient
-			WhisperChatHistory.find( { $or:[ {'recipient': socket.request.user._id}, {'sender': socket.request.user._id} ]} ).populate('recipient', 'username').populate('sender', 'username').exec()
-			.then(function(messages) {
-				if(isEmpty(messages)) return 
-				socket.emit("whisperChatHistory", messages)
-			})
+		socket.on('joinChat', async (name, device) => {
+			try {
+				const user = socket.request.user
 
-		})
-
-
-		socket.on("joinRoom", function (formattedRoom) {
-			Room.findById(formattedRoom._id).exec() //.populate('people', 'username').populate('invitedPeople', 'username').populate('owner', 'username')
-			.then(function (room) {
-				//When not to add a person to a room...
-				//console.log(room)
-				let userInRoom = room.people.find(function (userId) {
-					return userId+'' === socket.request.user._id+''
-				})
-				if(userInRoom) return Promise.reject(new Error("You are allready in that room."))
-				if(room.private === true) return Promise.reject(new Error("That room is private."))
-				if(room.status !== 'available') return Promise.reject(new Error("That room is not available."))
-				if(room.people.length >= room.peopleLimit) return Promise.reject(new Error("That room is full."))
-				
-				//add user to room in database, for persistance accross sessions
-				room.people.push(socket.request.user._id)
-
-				return room.save()
-			})
-			.then(function (room) {
-				return Promise.all([
-					User.findById(socket.request.user._id).exec(),
-					Room.findById(room._id).populate('people', 'username').populate('owner', 'username').exec()
-				])
-			})
-			.then(function(userAndRoom) {
-				//Add roomId to user.inRooms IF HE IS NOT ALLREAY IN THE ROOM
-				let [user, room] = userAndRoom
-				let inRoom = user.inRooms.find(function (roomId) {
-					return roomId+'' === room._id+''
-				})
-				console.log("inRoom: "+inRoom)
-				if(isEmpty(inRoom)) user.inRooms.push(room._id)
-				
-				return Promise.all([
-						user.save(),
-						room,
-						ChatHistory.findOne({roomId: room._id}).populate('messages.sender', 'username').exec()
-					])
-			})
-			.then(function (userAndRoomAndChatHistory) {
-				let [user, room, chatHistory] = userAndRoomAndChatHistory
-				console.log(user.inRooms)
-				//Join socket to room
-				socket.join(room.name, function (error) {
-					if(error) return Promise.reject(new Error("The socket is allready in room: " + room.name))
-					
-					//update everyone in the room (including yourself) about the new "user list"
-					//console.log(user, room, chatHistory)
-					chat.to(room.name).emit("userJoinedRoom", {
-						user: user,
-						room: room,
-						chatHistory: chatHistory
-					})
-				})
-				
-			})
-			.catch(function (error) {
-				socket.emit("errorMessage", error.message)
-				//Clean up failed attempt...
-			})
-		})
-
-		socket.on("leaveRoom", function(room) {
-			//remove socket from room
-			Room.findById(room._id).exec()
-			.then(function(room) {
-				//remove from room.people
-				let indexToRemove = room.people.indexOf(socket.request.user._id)
-				room.people.splice(indexToRemove, 1)
-				console.log("was user removed from room.people: "+room.people.indexOf(socket.request.user._id))
-
-				return room.save()
-			})
-			.then(function(room) {
-				socket.leave(room.name, function(error) {
-					if(error) {
-						console.log(socket.request.user._id+" failed to leave room "+room.name)
-						return
-					}
-					//room removed from socket.rooms
-				})
-				//I might announce that a user has leaft without having successfully removed the room from the socket	
-				return Room.findById(room._id).populate('people', 'username').populate('invitedPeople', 'username').populate('owner', 'username').exec()
-			})
-			.then(function(room){
-				chat.emit("userLeftRoom", {
-					room: room
-				})
-			})
-			.catch(function(error) {
-				console.log("#leaveRoom Error: " + error)
-			})
-		
-			//remove room from user.inRooms
-			User.findById(socket.request.user._id).exec()
-			.then(function(user) {
-				console.log("user in rooms: "+user.inRooms)
-				console.log("RoomId to remove: "+room._id)
-				let indexToRemove = user.inRooms.indexOf(room._id)
-				user.inRooms.splice(indexToRemove, 1)
-				console.log("after removal: "+user.inRooms)
-				return user.save()
-			})
-			.catch(function(error) {
-				console.log("#leaveRoom Error: " + error)
-			})
-		})
-
-
-		socket.on("createRoom", function (input) {
-			//make sure name is unique
-			Room.findOne({name: input.name}).exec()
-			.then(function(room) {
-				if(room) return Promise.reject(new Error("That name is allready taken"))
-
-				//Create room
-				let newRoom = new Room({
-					name: input.name,
-					owner: socket.request.user._id,
-					people: [],
-					image: input.image || "https://api.adorable.io/avatars/140/abott@adorable.png"
-					/*
-					peopleLimit: input.peopleLimit,
-					status: input.status,
-					private: input.private,
-					invitedPeople: []
-					*/
-				})
-
-				return newRoom.save()
-			})
-			.then(function(savedRoom) {
-				//Create chat history for room
-				let newChatHistory = new ChatHistory({
-					roomId: savedRoom._id,
-					messages: []
-				})
-				return Promise.all([
-					newChatHistory.save(), 
-					Room.findById(savedRoom._id).populate('owner', 'username').exec()
-				])
-			})
-			.then(function(results) {
-				var [savedChatHistory, savedRoom] = results
-				//no need to populate people, invitedPeople or messages.sender, becuase there are none
-				
-				//update users room lists and chat histories
-				if(savedRoom.private || savedRoom.status !== "available") {
-					socket.emit('newRoom', {
-						room: savedRoom
-					})
-				}
-				if(!savedRoom.private && savedRoom.status === "available") {
-					chat.emit('newRoom', {
-						room: savedRoom	
-					})
-				}
-			})
-			.catch(function(error) {
-				socket.emit("errorMessage", error.message)
-			})
-
-
-		})
-
-
-		socket.on("removeRoom", function (room) {
-			console.log("removing room: "+room.name)
-			console.log(room.owner._id, socket.request.user._id)
-			if(room.owner._id+'' !== socket.request.user._id+'') {
-				socket.emit("errorMessage", "You cannot remove a room you do not own.")
-				return
-			}
-			//make all sockets leave the room
-				//Tell the once disconnected about the room being removed ----------
-			chat.clients((error, clients) => {
-				if(error) console.log(error)
-				clients.forEach(function (clientId) {
-					console.log("clientId: "+clientId+", leaving room")
-					chat.connected[clientId].leave(room.name, function (error) {
-						if(error) return	//this is not working
-						console.log(chat.connected[clientId].request.user.username+' removed from room: '+room.name)
-					})
-				})
-			})
-
-			//remove room from all user.inRooms 
-		
-			User.find({inRooms: room._id}).exec() //ownedRooms is an array, but this still works :)
-			.then(function (users) {
-				if(!users) return Promise.reject(new Error("No users in the room: "+room._id))
-				users.forEach(function(user) {
-					let indexToRemove = user.inRooms.indexOf(room._id)
-					if(indexToRemove > -1) {
-						user.inRooms.splice(indexToRemove, 1)
-						console.log(user.inRooms)
-						user.save()
-					}
-				})
-
-			})
-			.catch(function (error) {
-				console.log("#removeRoom error: " + error)
-			})
-
-
-			//delete chat history for the room
-			ChatHistory.remove({roomId: room._id}).exec()
-			.then(function() {
-				console.log('Chat history removed from database')
-			})
-			.catch(function(error) {
-				console.log("#removeRoom error: " + error)
-			})
-
-			//delete room
-			Room.remove({_id: room._id}, function(error) {
-				if(error) {
-					console.log("#removeRoom error: " + error)
-					return
-				}
-				//removed
-				console.log('Room removed and emitting: roomRemoved')
-				chat.emit('roomRemoved', {
-					room: room
-				})
-			})
-
-			//update all members of the room
-				//make them delete the room
-				//make them delete the chat history
-				//make the owner update his user //MAY NOT APPLY AS I DONT HAVE A PROPPER USER OBJECT IN THE CLIENT
-
-		})
-		
-
-		socket.on("sendInRoom", function(data) {
-			//confirm socket is in room
-			//console.log(socket.rooms) //{ '/chat#n9YEUlYjLYSuUJDgAAAB': '/chat#n9YEUlYjLYSuUJDgAAAB' }
-
-			let isInRoom = Object.keys(socket.rooms).find(function (roomName) {
-				return roomName === data.room.name
-			})
-
-			if(!isInRoom) {
-				console.log("user trying to send message in room he is not in")
-				return
-			}
-
-			//store message in Chat history
-			ChatHistory.findOne({roomId: data.room._id}).exec()
-			.then(function(chatHistoryEntry) {
-				chatHistoryEntry.messages.push({
-					sender: data.message.sender,
-					body: data.message.body,
-					time: new Date()
-				})
-				return chatHistoryEntry.save()
-			})
-			.then(function(chatHistoryEntry) {
-				return ChatHistory.findById(chatHistoryEntry._id).populate('messages.sender', 'username').exec()
-			})
-			.then(function(populatedChatHistory){
-				let newFormattedMessage = populatedChatHistory.messages.pop()
-				//console.log(newFormattedMessage)
-				chat.in(data.room.name).emit("messageInRoom", {
-					roomId: populatedChatHistory.roomId,
-					message: newFormattedMessage
-				})
-			})
-			.catch(function(error) {
-				console.log(error)
-			})
-
-			//send message to all sockets in the room
-		})
-
-		socket.on("sendToUser", function(data) {
-			//Store and update recipient
-			let whisperChatHistory = new WhisperChatHistory({
-				recipient: data.recipient,
-				sender: data.sender,
-				body: data.body,
-				time: new Date()
-			})
-
-			let clientIdPromise = new Promise(function (resolve, reject) {
-				chat.clients((error, clients) => {
-					if(error) reject(new Error("Unable to retreve chat namespaced clients"))
-					console.log(clients)
-					clients.forEach(function (clientId) {
-						console.log(chat.connected[clientId].request.user._id, data.recipient)
-						if(chat.connected[clientId].request.user._id+'' === data.recipient+'') {
-							resolve(clientId)
-						}
-					})
-					reject(new Error("Unable to find the recipient socket"))
-				})
-			})
-
-			whisperChatHistory.save()
-			.then(function(message) {
-				return Promise.all([
-					clientIdPromise,
-					WhisperChatHistory.findById(message._id).populate('recipient', 'username').populate('sender', 'username').exec()
-				])
-			})
-			.then(function(clientIdAndMessage) {
-				let [clientId, message] = clientIdAndMessage
-				//console.log("clientId: "+ clientId)
-				//console.log("message: "+ message)
-				socket.broadcast.to(clientId).emit("newWhisperMessage", message)
-				socket.emit("newWhisperMessage", message)
-			})
-			.catch(function(error) {
-				console.log(error)
-			})
-
-
-		})
-
-
-		socket.on("fetchUser", function (data) {
-			socket.emit("setUser", {
-				user: socket.request.user,
-				vuex: { namespaced: true, namespace: 'auth'}
-			})
-		})
-
-		socket.on('disconnect', function () {
-			User.findById(socket.request.user._id, ['username']).exec()
-			.then(function(user) {
-				//console.log(user)
-				chat.emit('userWentOffline', user)
-			})
-			console.log('socket disconnected from /chat')
-		})
-
-	})
-}
-
-/*
-function getRoomChatHistoryForUser(userId) {
-	return User.findById(userId).exec()
-	.then(function(user) {
-		let chatHistoryPromises = []
-
-		let roomChatHistories = {}
-		
-		user.inRooms.forEach(function (roomId) {
-			chatHistoryPromises.push(
-				ChatHistory.find({roomId: roomId}).exec()	//MAY NOT WORK
-				.then(function(messages) {
-					roomChatHistories[roomId] = messages
-				}) 
-			)
-		})
-		return Promise.all(chatHistoryPromises)
-		.then(function(results){
-			console.log(results)
-			return Promise.resolve(roomChatHistories)
-		})
-	})
-}
-*/
-	
-/*
-
-
-router.beforeEach(guard)
-router.beforeResolve(guard) (2.5.0+)
-router.afterEach(hook)
-router.push(location, onComplete?, onAbort?)
-router.replace(location, onComplete?, onAbort?)
-router.go(n)
-router.back()
-router.forward()
-router.getMatchedComponents(location?)
-router.resolve(location, current?, append?)
-
-
-
-			User.findById(data.recipient._id).exec()
-			.then(function(recipient) {
-				if(!user) return Promise.reject(new Error("Failed to recieve message from "+socket.request.user.username))
-				recipient.messages.push({
-					sender: data.message.sender,
-					recipient: data.message.recipient,
-					body: data.message.body,
-					time: new Date()
-				})
-				return recipient.save()
-			})
-			.then(function(recipient) {
-				//get socketId of recipient
-				return new Promise(function (resolve, reject) {
+				var onlineUserIds = await new Promise(function (resolve, reject) {
 					chat.clients((error, clients) => {
 						if(error) reject(new Error("Unable to retreve chat namespaced clients"))
-
+						
+						let onlineUserIds = []
 						clients.forEach(function (clientId) {
-							if(chat.connected[clientId].request.user === recipient._id) {
-								resolve(clientId, recipient)
+							if(chat.connected[clientId].request.user && (chat.connected[clientId].request.user._id !== socket.request.user._id)) {
+								onlineUserIds.push(chat.connected[clientId].request.user._id)
 							}
+						})
+						resolve(onlineUserIds)
+					})
+				})
+
+				const bot = await User.findOne({username: 'Alex Bot'}).exec()
+				onlineUserIds.push(bot._id)
+				const onlineUsers = await User.find({'_id': { $in: onlineUserIds }}).exec()
+				const rooms = await Room.find({}).populate('people', 'username').populate('owner', 'username').exec()
+
+				
+				const messages = await Message.find({
+					$or:[ 
+						{'recipient': user._id}, 
+						{'sender': user._id}, 
+						{'room': { $in: user.inRooms } }
+					]
+				}).populate('sender', 'username').populate('recipient', 'username').exec()
+				
+				socket.emit('test', null) // WHAT THE FLYING F***
+				socket.emit('rooms', rooms)
+				socket.emit('onlineUsers2', onlineUsers)
+				socket.emit("messages", messages)
+				
+				const roomsTheUserIsIn = await Room.find({_id: { $in: user.inRooms}}).populate('people', 'username').populate('owner', 'username').exec()
+
+				roomsTheUserIsIn.forEach(function (room) {
+					socket.join(room.name, function(error) {
+						if(error) {
+							// console.log(user.username + ' failed to joind room ' + room.name)
+							return
+						}
+						// console.log(user.username + ' joined room ' + room.name)
+
+						chat.to(room.name).emit("userJoinedRoom", {
+							user: user,
+							room: room,
+							messages: []
 						})
 					})
 				})
-			})
-			.then(function(socketIdAndRecipient) {
-				let [recipientSocketId, recipient] = socketIdAndRecipient
-				chat.connected[recipientSocketId].emit('messageFromUser', recipient.messages.pop())
-			})
-			.catch(function(error) {
-				console.log(error)
-			})
+			} catch (err) {
+				console.log('### JOINCHAT ERROR', err)
+			}
+		})
+
+		socket.on("sendToUser", async (data) => {
+			const bot = await User.findOne({username: 'Alex Bot'}).exec()
+			if (data.message.recipient+'' === bot._id+'') {
+				var [ messageToBot, messageFromBot] = await Promise.all([new Message({
+						recipient: data.message.recipient,
+						sender: data.message.sender,
+						time: moment().format('MMMM Do YYYY, h:mm:ss a'),
+						body: data.message.body,
+						type: 'whisper'
+					}).save(), new Message({
+						recipient: data.message.sender,
+						sender: data.message.recipient,
+						time: moment().format('MMMM Do YYYY, h:mm:ss a'),
+						body: 'That was such a funny message!',
+						type: 'whisper'
+					}).save()
+
+				]);
 
 
-			//Store and update sender
-			User.findById(socket.request.user._id).exec()
-			.then(function(sender) {
-				if(!user) return Promise.reject(new Error("Failed to send message to "+data.recipient.username))
-				sender.messages.push({
-					sender: data.message.sender,
-					recipient: data.message.recipient,
-					body: data.message.body,
-					time: new Date()
+				[messageToBot, messageFromBot] = await Promise.all([
+					Message.findById(messageToBot._id).populate('sender', 'username').populate('recipient', 'username').exec(),
+					Message.findById(messageFromBot._id).populate('sender', 'username').populate('recipient', 'username').exec()
+				]);
+
+				socket.emit("newMessage", messageToBot)
+				socket.emit("newMessage", messageFromBot)
+				return
+			}
+
+			try {
+				var clientId = await new Promise(function (resolve, reject) {
+					chat.clients((error, clients) => {
+						if(error) reject(new Error("Unable to retreve chat namespaced clients"))
+						clients.forEach(function (clientId) {
+							if(chat.connected[clientId].request.user._id+'' === data.message.recipient+'') {
+								resolve(clientId)
+							}
+						})
+						reject(new Error("Unable to find the recipient socket"))
+					})
 				})
-				return sender.save()
+
+				var message = await new Message({
+					recipient: data.message.recipient,
+					sender: data.message.sender,
+					time: moment().format('MMMM Do YYYY, h:mm:ss a'),
+					body: data.message.body,
+					type: 'whisper'
+				}).save()
+				message = await Message.findById(message._id).populate('sender', 'username').populate('recipient', 'username').exec()
+
+				socket.broadcast.to(clientId).emit("newMessage", message)
+				socket.emit("newMessage", message)
+
+			} catch (err) {
+				console.log(err)
+			}
+		})
+
+		socket.on("sendInRoom", async (data) => {
+			try {
+				let isInRoom = Object.keys(socket.rooms).find(function (roomName) {
+					return roomName === data.room.name
+				})
+	
+				if(!isInRoom) {
+					return
+				}
+				let message = await new Message({
+					sender: data.message.sender,
+					time: moment().format('MMMM Do YYYY, h:mm:ss a'),
+					body: data.message.body,
+					type: 'room',
+					room: data.room._id
+				}).save()
+				message = await Message.findById(message._id).populate('sender', 'username').populate('recipient', 'username').exec()
+	
+				chat.in(data.room.name).emit("newMessage", message)
+			} catch (err) {
+				console.log(err)
+			}
+		})
+
+
+		socket.on("joinRoom", async (data) => {
+			let room = data.room
+			try {
+				let user = await User.findById(socket.request.user._id).exec()
+				room = await Room.findById(room._id).exec()
+				
+				let userInRoom = room.people.find((userId) => {
+					return userId+'' === user._id+''
+				})
+				if (userInRoom) return
+
+				room.people.push(user._id)
+
+				room = await room.save()
+				room = await Room.findById(room._id).populate('people', 'username').populate('owner', 'username').exec()
+				
+				let inRoom = user.inRooms.indexOf(room._id)
+				if(inRoom < 0) user.inRooms.push(room._id)
+
+				user = await user.save()
+
+				const messages = await Message.find({room: room._id}).populate('sender', 'username').exec()
+				// console.log('joinRoom messages: ', messages)
+				socket.join(room.name, function (error) {
+					if(error) return Promise.reject(new Error("The socket is allready in room: " + room.name))
+					// console.log(user.username + ' joined room: ' + room.name)
+					//update everyone in the room (including yourself) about the new "user list"
+					chat.to(room.name).emit("userJoinedRoom", {
+						user: user,
+						room: room,
+						messages: messages
+					})
+				})
+
+			} catch (err) {
+				socket.emit("errorMessage", error.message)
+			}
+
+		})
+		
+		socket.on("leaveRoom", async (data) => {
+			try {
+				let room = await Room.findById(data.room._id).exec()
+				let user = await User.findById(socket.request.user._id).exec()
+	
+				socket.leave(room.name, async (error) => {
+					if (error) {
+						// console.log(socket.request.user._id+" failed to leave room "+room.name)
+						return 
+					}
+					let indexToRemove = room.people.indexOf(user._id)
+					room.people.splice(indexToRemove, 1)
+					room = await room.save()
+					room = await Room.findById(room._id).populate('people', 'username').populate('owner', 'username').exec()
+					// Tell others in the room and update their rooms
+					chat.to(room.name).emit("userLeftRoom", {
+						room: room
+					})
+	
+					indexToRemove = user.inRooms.indexOf(room._id)
+					user.inRooms.splice(indexToRemove, 1)
+					user = await user.save()
+
+					socket.emit("youLeftRoom", {
+						user: user,
+						room: room
+					})
+				})
+			} catch (err) {
+				console.log("Error when leaving room: ", err)
+			}
+
+		})
+
+		socket.on('disconnect', function () {
+			User.findById(socket.request.user._id).exec()
+			.then(function(user) {
+				chat.emit('userWentOffline', user)
 			})
-			.then(function(sender) {
-				socket.emit('messageFromUser', sender.messages.pop())
-			})
-			.catch(function(error) {
-				console.log(error)
+		})
+
+		socket.on("createRoom", async (data) => {
+			try {
+				let room = await new Room({
+					name: data.room.name,
+					owner: socket.request.user._id,
+					people: [],
+					image: data.room.image
+				}).save()
+				
+				room = await Room.findById(room._id).populate('owner', 'username').exec()
+				
+				chat.emit('newRoom', room)
+			} catch (err) {
+				console.log(err)
+				//socket.emit("errorMessage", error.message)
+			}
+		})
+
+
+		socket.on("deleteRoom", async (data) => {
+			let room = data.room
+			if (room.owner._id+'' !== socket.request.user._id+'') {
+				// console.log('User cannor remove room he does not own!')
+				return
+			}
+			chat.clients((error, clients) => {
+				if(error) {
+					// console.log(error)
+					return
+				}
+				clients.forEach(function (clientId) {
+					// console.log("clientId: "+clientId+", leaving room")
+					chat.connected[clientId].leave(room.name, function (error) {
+						if(error) return	//this is not working
+						// console.log(chat.connected[clientId].request.user.username+' removed from room: '+room.name)
+					})
+				})
 			})
 
-*/
+			let users = await User.find({inRooms: room._id}).exec() //ownedRooms is an array, but this still works :)
+			users.forEach(function(user) {
+				let indexToRemove = user.inRooms.indexOf(room._id)
+				if(indexToRemove > -1) {
+					user.inRooms.splice(indexToRemove, 1)
+					user.save()
+				}
+			})
+
+			Room.remove({_id: room._id}, function(error) {
+				if(error) {
+					// console.log("#removeRoom error: " + error)
+					return
+				}
+				chat.emit('roomRemoved', room)
+			})
+		})
+
+	})
+}

@@ -15,27 +15,6 @@
 .inline_block {
   display: inline_block; }
 
-.Application__loadingpage {
-  position: fixed;
-  /* Stay in place */
-  z-index: 1;
-  /* Sit on top */
-  left: 0;
-  top: 0;
-  width: 100%;
-  /* Full width */
-  height: 100%;
-  /* Full height */
-  overflow: auto;
-  /* Enable scroll if needed */
-  background-color: black;
-  /* Fallback color */
-  background-color: rgba(0, 0, 0, 0.4);
-  /* Black w/ opacity */ }
-
-.Application--hide {
-  display: none; }
-
 div {
   box-sizing: border-box; }
 
@@ -48,8 +27,27 @@ body, html {
 main {
   border-radius: 10px;
   width: 800px;
+  border: 1px solid grey;
   margin: 20px auto;
-  height: 600px; }
+  height: 700px; }
+
+.navigation {
+  text-align: center;
+  margin-top: 20px; }
+  .navigation a {
+    margin: 20px;
+    color: #535862; }
+
+.error-message {
+  text-align: center;
+  font-size: 40px;
+  margin-top: 100px; }
+
+.links {
+  text-align: center; }
+  .links a {
+    color: #535862;
+    margin: 0 20px; }
 
 ::-webkit-scrollbar {
   background-color: #282A31;
@@ -65,44 +63,125 @@ main {
   width: 30%;
   height: 100%;
   background: #282A31;
-  overflow: hidden;
   color: #F2F5F8;
-  overflow-y: scroll;
-  border-radius: 10px 0 0 10px; }
-  .menu .heading {
+  border-radius: 10px 0 0 10px;
+  overflow: hidden;
+  overflow-y: scroll; }
+  .menu .badge {
+    padding: 10px; }
+    .menu .badge img {
+      border-radius: 100%;
+      width: 50px;
+      height: 50px;
+      display: inline-block;
+      border: 3px solid #86BB71; }
+    .menu .badge .name {
+      display: inline-block;
+      position: relative;
+      bottom: 20px;
+      left: 20px;
+      font-size: 20px; }
+  .menu .scroll-navigation .heading {
     padding: 10px 0 10px 50px;
     font-weight: 400;
     letter-spacing: 0.5px;
     border-bottom: 1px solid darkgrey;
     border-top: 1px solid darkgrey; }
-  .menu .element:hover {
+  .menu .scroll-navigation .element:hover {
     background: linear-gradient(45deg, #9198e5, #e66465); }
-  .menu .element {
-    padding: 10px 0 10px 20px;
+  .menu .scroll-navigation .element {
+    padding: 5px 0 5px 20px;
     position: relative;
     cursor: pointer; }
-    .menu .element img {
+    .menu .scroll-navigation .element img {
       border-radius: 100%;
       width: 50px;
       height: 50px;
       display: inline-block;
       border: 3px solid #535862; }
-    .menu .element .name {
+    .menu .scroll-navigation .element .name {
       display: inline-block;
       position: absolute;
       line-height: 50px;
       width: 150px;
       padding-left: 20px;
       font-size: 1.1em; }
-  .menu .create-room {
-    color: black; }
-  .menu .options .option {
+    .menu .scroll-navigation .element .message-count {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      background-color: #86BB71;
+      padding: 2px 3px;
+      justify-content: center;
+      text-align: center;
+      border-radius: 2px;
+      font-size: 10px;
+      line-height: 12px;
+      border-color: transparent; }
+    .menu .scroll-navigation .element .leave-room-button {
+      position: absolute;
+      bottom: 10px;
+      left: 100px;
+      background: #f7ec6f;
+      color: #282A31;
+      font-size: 10px;
+      line-height: 12px;
+      border-color: transparent;
+      cursor: pointer;
+      justify-content: center;
+      text-align: center;
+      border-radius: 2px;
+      padding: 2px 4px; }
+    .menu .scroll-navigation .element .delete-room-button {
+      position: absolute;
+      bottom: 10px;
+      left: 150px;
+      font-size: 10px;
+      line-height: 12px;
+      background: #f77a6a;
+      color: #282A31;
+      border-color: transparent;
+      cursor: pointer;
+      justify-content: center;
+      text-align: center;
+      border-radius: 2px;
+      padding: 2px 4px; }
+  .menu .scroll-navigation .create-room {
+    color: black;
+    padding: 5px 0 5px 15px; }
+    .menu .scroll-navigation .create-room .room-image-select {
+      border-radius: 5px;
+      background-color: #94C2ED;
+      color: #F2F5F8;
+      width: 45px; }
+    .menu .scroll-navigation .create-room input {
+      background-color: #F2F5F8;
+      border-radius: 4px;
+      border-color: transparent;
+      width: 110px; }
+    .menu .scroll-navigation .create-room .add-room-button {
+      margin-left: 5px;
+      font-size: 12px;
+      line-height: 14px;
+      background: #86BB71;
+      color: #282A31;
+      border-color: transparent;
+      cursor: pointer;
+      justify-content: center;
+      text-align: center;
+      border-radius: 2px;
+      padding: 2px 4px; }
+  .menu .scroll-navigation .options .option {
     padding: 10px 0 10px 20px;
     cursor: pointer; }
-    .menu .options .option span {
+    .menu .scroll-navigation .options .option span {
       margin-left: 10px; }
-  .menu .options .option:hover {
+  .menu .scroll-navigation .options .option:hover {
     background: linear-gradient(45deg, #9198e5, #e66465); }
+  .menu .scroll-navigation .room-image-select {
+    width: 40px; }
+  .menu .scroll-navigation .room-name-input {
+    width: 130px; }
 
 .chat {
   float: right;
@@ -139,31 +218,38 @@ main {
     width: 5px; }
   .chat .history {
     overflow-y: scroll;
-    height: 50%;
+    max-height: 55%;
     padding: 30px;
-    border-top: 0.5px solid #535862;
-    border-bottom: 0.5px solid #535862; }
-    .chat .history .message {
+    border-top: 0.5px solid #535862; }
+    .chat .history .message-from-me .message-info {
+      margin-bottom: 10px;
+      padding-left: 140px; }
+      .chat .history .message-from-me .message-info .name i {
+        color: #86BB71;
+        margin: 0 5px; }
+      .chat .history .message-from-me .message-info .time {
+        opacity: 0.5; }
+    .chat .history .message-from-me .message-body {
+      background: #86BB71;
       color: white;
       padding: 18px 20px;
-      line-height: 26px;
       font-size: 16px;
       border-radius: 7px;
       margin-bottom: 15px;
       width: 90%;
       position: relative; }
-    .chat .history .message-from-other:after {
-      bottom: 100%;
-      left: 7%;
-      border: solid transparent;
-      content: " ";
-      height: 0;
-      width: 0;
-      position: absolute;
-      pointer-events: none;
-      border-bottom-color: #86BB71;
-      border-width: 10px;
-      margin-left: -10px; }
+      .chat .history .message-from-me .message-body:after {
+        bottom: 100%;
+        left: 93%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
+        border-bottom-color: #86BB71;
+        border-width: 10px;
+        margin-left: -10px; }
     .chat .history .message-from-other .message-info {
       margin-bottom: 10px; }
       .chat .history .message-from-other .message-info i {
@@ -173,32 +259,36 @@ main {
         margin-left: 10px;
         opacity: 0.5; }
     .chat .history .message-from-other .message-body {
-      background: #94C2ED; }
+      background: #94C2ED;
+      color: white;
+      padding: 18px 20px;
+      font-size: 16px;
+      border-radius: 7px;
+      margin-bottom: 15px;
+      width: 90%;
+      position: relative; }
       .chat .history .message-from-other .message-body:after {
+        bottom: 100%;
+        left: 7%;
+        border: solid transparent;
+        content: " ";
+        height: 0;
+        width: 0;
+        position: absolute;
+        pointer-events: none;
         border-bottom-color: #94C2ED;
-        left: 93%; }
-    .chat .history .message-from-me {
-      background: #86BB71; }
-      .chat .history .message-from-me .message-info {
-        margin-bottom: 10px; }
-        .chat .history .message-from-me .message-info .name {
-          float: right;
-          margin-right: 55px; }
-          .chat .history .message-from-me .message-info .name i {
-            color: #86BB71;
-            margin: 0 5px; }
-        .chat .history .message-from-me .message-info .time {
-          margin-left: 265px;
-          opacity: 0.5; }
+        border-width: 10px;
+        margin-left: -10px; }
   .chat .input {
     background: white;
     position: absolute;
     bottom: 0;
     padding: 30px;
     width: 100%;
-    height: 35%;
+    height: 30%;
     background: #F2F5F8;
-    border-radius: 0 0 10px 0; }
+    border-radius: 0 0 10px 0;
+    border-top: 0.5px solid #535862; }
     .chat .input textarea {
       width: 90%;
       margin: 0 auto;
@@ -215,6 +305,158 @@ main {
       float: right;
       margin: 10px 15px 0 0;
       cursor: pointer; }
+
+.attribution {
+  text-align: center;
+  margin-top: 40px; }
+  .attribution a {
+    color: #535862; }
+
+.notification {
+  background: #f7ec6f;
+  color: #282A31;
+  padding: 10px 20px;
+  width: 600px;
+  text-align: center;
+  margin: 10px auto;
+  border-radius: 10px; }
+
+.register .form {
+  padding: 10px 20px 20px 20px; }
+  .register .form .selectedAvatar {
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    margin-left: 40px;
+    border: 7px solid #86BB71; }
+  .register .form .inputs {
+    position: relative;
+    bottom: 70px;
+    display: inline-block; }
+    .register .form .inputs .username {
+      width: 150px;
+      font-size: 20px;
+      line-height: 1.5em;
+      padding: 2px;
+      background-color: rgba(0, 0, 0, 0);
+      color: #282A31;
+      border: none;
+      border-bottom: 2px solid #282A31;
+      outline: none;
+      box-shadow: none;
+      margin-right: 20px;
+      margin-left: 30px; }
+    .register .form .inputs .password {
+      width: 150px;
+      font-size: 20px;
+      line-height: 1.5em;
+      padding: 2px;
+      background-color: rgba(0, 0, 0, 0);
+      color: #282A31;
+      border: none;
+      border-bottom: 2px solid #282A31;
+      outline: none;
+      box-shadow: none; }
+    .register .form .inputs .registerButton {
+      margin-left: 10px;
+      background: #86BB71;
+      border-color: transparent;
+      color: #fff;
+      cursor: pointer;
+      justify-content: center;
+      text-align: center;
+      border-radius: 4px;
+      padding: 5px 10px; }
+
+.register .avatarContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly; }
+  .register .avatarContainer h3 {
+    display: block;
+    text-align: center;
+    width: 100%;
+    height: 1em;
+    padding: 0;
+    margin: 0;
+    color: #535862; }
+  .register .avatarContainer .avatar {
+    width: 180px;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center; }
+    .register .avatarContainer .avatar img {
+      width: 130px;
+      height: 130px;
+      border-radius: 100%;
+      cursor: pointer; }
+    .register .avatarContainer .avatar img:hover {
+      border: 5px solid #94C2ED;
+      transition: height, width 100ms linear;
+      height: 140px;
+      width: 140px; }
+
+.register .attribution {
+  text-align: center;
+  margin-top: 30px; }
+  .register .attribution a {
+    color: #535862; }
+
+.login {
+  text-align: center; }
+  .login .currentAvatar {
+    width: 250px;
+    height: 250px;
+    border-radius: 100%;
+    margin-top: 70px;
+    border: 7px solid #86BB71; }
+  .login .username {
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 40px;
+    display: block;
+    width: 250px;
+    font-size: 30px;
+    line-height: 1.5em;
+    padding: 2px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #282A31;
+    border: none;
+    border-bottom: 2px solid #282A31;
+    outline: none;
+    box-shadow: none; }
+  .login .password {
+    text-align: center;
+    margin: 0 auto;
+    margin-top: 20px;
+    margin-bottom: 60px;
+    display: block;
+    width: 250px;
+    font-size: 30px;
+    line-height: 1.5em;
+    padding: 2px;
+    background-color: rgba(0, 0, 0, 0);
+    color: #282A31;
+    border: none;
+    border-bottom: 2px solid #282A31;
+    outline: none;
+    box-shadow: none; }
+  .login .registerButton {
+    margin-top: 50px;
+    background: #86BB71;
+    border-color: transparent;
+    color: #fff;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 4px;
+    padding: 10px 20px;
+    font-size: 30px; }
+  .login .attribution {
+    text-align: center;
+    margin-top: 30px; }
+    .login .attribution a {
+      color: #535862; }
 
 
 /*# sourceMappingURL=main.css.map*/

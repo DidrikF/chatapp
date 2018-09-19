@@ -2,7 +2,6 @@ var mongoose = require('mongoose') //You connect to the database through mongoos
 var Schema = mongoose.Schema
 
 var RoomSchema = mongoose.Schema({
-
 	name: {
 		type: String,
 		required: [true, "Name is required"],
@@ -15,24 +14,9 @@ var RoomSchema = mongoose.Schema({
 	},
 	people: [{type: Schema.ObjectId, ref: 'User'}],
 	image: {
-		type: String
+		type: String, 
+		required: [true, "Image is required"], //Is alleady a hash
 	}
-	/*
-	peopleLimit: {
-		type: Number,
-		default: 30
-	},
-	status: {
-		type: String,
-		required: [true, "Status is required"]
-	},
-	private: {
-		type: Boolean,
-		default: true,
-		required: [true, "Privacy settings is required"]
-	},
-	invitedPeople: [{type: Schema.ObjectId, ref: 'User'}]
-	*/
 })
 
 

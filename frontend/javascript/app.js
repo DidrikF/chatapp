@@ -1,6 +1,3 @@
-import store from './vuex'
-import router from './router'
-
 import socketioVuePlugin from './vue_plugins/socketioVuePlugin'
 import Emitter from './vue_plugins/ArbitraryEmitter' //need a vm
 
@@ -12,16 +9,15 @@ require('../sass/app.sass') //dont know what this is for, maybe required for web
 
 localforage.config({
 	driver: localforage.LOCALSTORAGE,
-	storeName: 'vue-socket'
+	storeName: 'chatapp'
 })
 
 
-import ApplicationComponent from './components/Application.vue'
-import NavigationComponent from './components/Navigation.vue'
+import Chat from './components/Chat.vue'
 
 
-Vue.component('application', ApplicationComponent)
-Vue.component('navigation', NavigationComponent)
+Vue.component('chat', Chat)
+
 
 Emitter.addListener('any_connect', function () {
 	console.log('Connected to a namespace')
@@ -29,31 +25,12 @@ Emitter.addListener('any_connect', function () {
 
 
 Vue.use(socketioVuePlugin, [
-		//i connect before i get the chance to register the listeners
-		{name: 'root', instance: io.connect('/root')},	//for application wide traffic
-		{name: 'chat', instance: io.connect('/chat')} //io.connect('/chat')
-	], store)
+		{name: 'chat', instance: io.connect('/chat')}
+	])
 
 Vue.prototype.$mainSocket = io.connect() //available in all vue instance and instance inherreting from Vue
 
-let vm = new Vue({
+window.vm = new Vue({
 	el: '#app',
-	store: store,
-	router: router,
-	sockets: {
-		config: {
-			namespace: 'root'
-		},
-		root_disconnect() {
-			console.log('The root namespace had a disconnect event')
-		}
-	}
-
-	//How to register listeners for foreign namespace 
 
 }) 
-
-//console.log(vm.$sockets)
-
-//["connect", "error", "disconnect", "reconnect", "reconnect_attempt", "reconnecting", 
-//"reconnect_error", "reconnect_failed", "connect_error", "connect_timeout", "connecting", "ping", "pong"]

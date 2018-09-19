@@ -4,9 +4,12 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
   mode: 'development',
-  entry: ['./frontend/javascript/app.js'], // , './frontend/sass/app.sass'
+  entry: {
+    app: './frontend/javascript/app.js', 
+    loginRegister: './frontend/javascript/loginRegister.js'
+  },
   output: {
-    filename: 'app.js',
+    filename: '[name].js',
     path: path.resolve(__dirname, 'public')
   },
   devtool: "source-map",
@@ -59,8 +62,12 @@ module.exports = {
     new MiniCssExtractPlugin({
       // Options similar to the same options in webpackOptions.output
       // both options are optional
-      filename: "[name].css",
+      filename: "main.css",
       chunkFilename: "[id].css"
     })
   ],
+  devServer: {
+    contentBase: path.join(__dirname, 'public'),
+    port: 8080
+  }
 };

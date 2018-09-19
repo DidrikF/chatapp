@@ -3,7 +3,6 @@ var Schema = mongoose.Schema
 
 
 var UserSchema = mongoose.Schema({
-
 	username: {
 		type: String,
 		required: [true, "Username is required"],
@@ -12,20 +11,13 @@ var UserSchema = mongoose.Schema({
 	password: {
 		type: String,
 		required: [true, "Password is required"], //Is alleady a hash
+		select: false,
 	},
 	image: {
 		type: String,
+		required: [true, "An avatar is required"], //Is alleady a hash
 	},
-	ownedRooms: [{type: Schema.ObjectId, ref: "Room"}],
 	inRooms: [{type: Schema.ObjectId, ref: "Room"}],
-	// friends: [{type: Schema.ObjectId, ref: "User"}],
-	messages: [
-		{
-			sender: {type: Schema.ObjectId, ref: 'User'},
-			body: {type: String},
-			time: {type: Date}
-		}
-	]
 })
 
 var user = module.exports = mongoose.model('User', UserSchema)
