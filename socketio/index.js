@@ -2,7 +2,9 @@ var socketio = require('socket.io');
 var User = require('../models/User.model')
 
 module.exports = function (server){
-	var io = socketio.listen(server)
+	var io = socketio.listen(server, {
+		path: '/livedemo/chatapp'
+	})
 		
 	io.on('connection', function(socket) {
 		console.log('# Socket ID: ' + socket.id + ' connected to /')
