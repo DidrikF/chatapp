@@ -139,7 +139,7 @@ _ArbitraryEmitter2.default.addListener('any_connect', function () {
 
 _vue2.default.use(_socketioVuePlugin2.default, [{ name: 'chat', instance: _socket2.default.connect('/livedemo/chatapp/chat') }]);
 
-_vue2.default.prototype.$mainSocket = _socket2.default.connect(); //available in all vue instance and instance inherreting from Vue
+_vue2.default.prototype.$mainSocket = _socket2.default.connect('/livedemo/chatapp'); //available in all vue instance and instance inherreting from Vue
 
 window.vm = new _vue2.default({
 	el: '#app'
