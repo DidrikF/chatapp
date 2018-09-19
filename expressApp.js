@@ -17,9 +17,9 @@ let app = express()
 
 app.set('views', path.join(__dirname, 'frontend','views'))
 app.set('view engine', 'pug') 
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico'))) 
+app.use('/livedemo/chatapp', favicon(path.join(__dirname, 'public', 'favicon.ico'))) 
 app.use(logger('dev')) 
-app.use(express.static(path.join(__dirname, 'public')))
+app.use('/livedemo/chatapp', express.static(path.join(__dirname, 'public')))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser()) //Parse Cookie header and populate req.cookies with an object keyed by the cookie names.
@@ -29,15 +29,15 @@ app.use(cookieParser()) //Parse Cookie header and populate req.cookies with an o
 let router = express.Router();
 
 /* GET home page. */
-router.get('/', function(request, response) {
+router.get('/livedemo/chatapp/', function(request, response) {
   response.render('register');
 })
 
-router.get('/login', function (request, response) {
+router.get('/livedemo/chatapp/login', function (request, response) {
   response.render('login')
 })
 
-router.get('/app', authorize, function (request, response) {
+router.get('/livedemo/chatapp/app', authorize, function (request, response) {
   response.render('application')
 })
 
@@ -55,7 +55,7 @@ function authorize (request, response, next) {
 
 
 /* Registration, Login, Logout */
-router.post('/auth/register', function (request, response) {
+router.post('/livedemo/chatapp/auth/register', function (request, response) {
   let user = new User({
     image: request.body.image,
     username: request.body.username,
@@ -73,7 +73,7 @@ router.post('/auth/register', function (request, response) {
 
 })
 
-router.post('/auth/login', function (request, response) {
+router.post('/livedemo/chatapp/auth/login', function (request, response) {
   User.findOne({username: request.body.username}).select('+password').exec()
   .then(function (user) {
     if(user.password == request.body.password) {
@@ -93,7 +93,7 @@ router.post('/auth/login', function (request, response) {
   })
 })
 
-router.post('/auth/logout', function (request, response) {
+router.post('/livedemo/chatapp/auth/logout', function (request, response) {
   response.clearCookie('Authorization').status(200).send({message: "Successfully logged out"})
 })
 
