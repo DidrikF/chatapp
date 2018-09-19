@@ -25,10 +25,10 @@ Emitter.addListener('any_connect', function () {
 
 
 Vue.use(socketioVuePlugin, [
-		{name: 'chat', instance: io.connect('/livedemo/chatapp/chat')}
+		{name: 'chat', instance: io.connect('/chat')}
 	])
 
-Vue.prototype.$mainSocket = io.connect('/livedemo/chatapp') //available in all vue instance and instance inherreting from Vue
+Vue.prototype.$mainSocket = io.connect() //available in all vue instance and instance inherreting from Vue
 
 window.vm = new Vue({
 	el: '#app',
