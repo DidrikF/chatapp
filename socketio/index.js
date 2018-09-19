@@ -3,7 +3,7 @@ var User = require('../models/User.model')
 
 module.exports = function (server){
 	var io = socketio.listen(server, {
-		path: '/livedemo/chatapp/test'
+		path: '/livedemo/chatapp/socket.io'
 	})
 		
 	io.on('connection', function(socket) {
