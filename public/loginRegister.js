@@ -1988,7 +1988,7 @@ exports.default = {
         return {
             username: "",
             password: "",
-            avatars: ['images/bewer.jpg', 'images/cat.jpg', 'images/cow.jpg', 'images/donky.jpg', 'images/duck.jpg', 'images/lion.jpg', 'images/penguin.jpg', 'images/sea_lion.jpg'],
+            avatars: ['livedemo/chatapp/images/bewer.jpg', 'livedemo/chatapp/images/cat.jpg', 'livedemo/chatapp/images/cow.jpg', 'livedemo/chatapp/images/donky.jpg', 'livedemo/chatapp/images/duck.jpg', 'livedemo/chatapp/images/lion.jpg', 'livedemo/chatapp/images/penguin.jpg', 'livedemo/chatapp/images/sea_lion.jpg'],
             currentAvatar: 'images/bewer.jpg',
             index: 7
         };
@@ -2010,12 +2010,12 @@ exports.default = {
         login: function login() {
             var _this2 = this;
 
-            _axios2.default.post('/auth/login', {
+            _axios2.default.post('/livedemo/chatapp/auth/login', {
                 username: this.username,
                 password: this.password
             }).then(function (response) {
                 Promise.all([_localforage2.default.setItem('user', response.data.user), _localforage2.default.setItem('jwt', response.data.jwt)]).then(function () {
-                    window.location.replace('/app');
+                    window.location.replace('/livedemo/chatapp/app');
                 });
             }).catch(function (error) {
                 if (error.response) _this2.login.errors = error.response.data;
@@ -2054,7 +2054,7 @@ exports.default = {
             password: "",
             selectedAvatar: 'images/bewer.jpg',
             errors: null,
-            avatars: ['images/bewer.jpg', 'images/cat.jpg', 'images/cow.jpg', 'images/donky.jpg', 'images/duck.jpg', 'images/lion.jpg', 'images/penguin.jpg', 'images/sea_lion.jpg']
+            avatars: ['livedemo/chatapp/images/bewer.jpg', 'livedemo/chatapp/images/cat.jpg', 'livedemo/chatapp/images/cow.jpg', 'livedemo/chatapp/images/donky.jpg', 'livedemo/chatapp/images/duck.jpg', 'livedemo/chatapp/images/lion.jpg', 'livedemo/chatapp/images/penguin.jpg', 'livedemo/chatapp/images/sea_lion.jpg']
         };
     },
 
@@ -2062,13 +2062,13 @@ exports.default = {
         register: function register() {
             var _this = this;
 
-            _axios2.default.post('/auth/register', {
+            _axios2.default.post('/livedemo/chatapp/auth/register', {
                 image: this.selectedAvatar,
                 username: this.username,
                 password: this.password
             }).then(function (response) {
                 _this.register.errors = null;
-                window.location.replace("/login");
+                window.location.replace("/livedemo/chatapp/login");
             }).catch(function (error) {
                 _this.errors = error.response.data;
                 _this.clearFields();
@@ -5505,9 +5505,9 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("nav", { staticClass: "navigation" }, [
-      _c("a", { attrs: { href: "/" } }, [_vm._v("Register")]),
+      _c("a", { attrs: { href: "/livedemo/chatapp/" } }, [_vm._v("Register")]),
       _vm._v(" "),
-      _c("a", { attrs: { href: "/app" } }, [_vm._v("Chat")])
+      _c("a", { attrs: { href: "/livedemo/chatapp/app" } }, [_vm._v("Chat")])
     ])
   },
   function() {
@@ -5635,9 +5635,11 @@ var staticRenderFns = [
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
     return _c("nav", { staticClass: "navigation" }, [
-      _c("a", { attrs: { href: "/login" } }, [_vm._v("Login")]),
+      _c("a", { attrs: { href: "/livedemo/chatapp/login" } }, [
+        _vm._v("Login")
+      ]),
       _vm._v(" "),
-      _c("a", { attrs: { href: "/app" } }, [_vm._v("Chat")])
+      _c("a", { attrs: { href: "/livedemo/chatapp/app" } }, [_vm._v("Chat")])
     ])
   },
   function() {

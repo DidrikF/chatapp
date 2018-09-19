@@ -238,7 +238,7 @@ export default {
 
   methods: {
     logout () {
-      axios.post('/auth/logout')
+      axios.post('/livedemo/chatapp/auth/logout')
       .then((response) => {
         this.user = null
         this.jwt = null

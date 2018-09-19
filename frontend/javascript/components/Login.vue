@@ -1,8 +1,8 @@
 <template>
     <main class="login">
         <nav class="navigation">
-            <a href="/">Register</a>
-            <a href="/app">Chat</a>
+            <a href="/livedemo/chatapp/">Register</a>
+            <a href="/livedemo/chatapp/app">Chat</a>
         </nav>
         <img class="currentAvatar" v-bind:src="currentAvatar" alt="">
         <div class="inputs">
@@ -26,14 +26,14 @@ export default {
             username: "",
             password: "",
             avatars: [
-                'images/bewer.jpg',
-                'images/cat.jpg',
-                'images/cow.jpg',
-                'images/donky.jpg',
-                'images/duck.jpg',
-                'images/lion.jpg',
-                'images/penguin.jpg',
-                'images/sea_lion.jpg',
+                'livedemo/chatapp/images/bewer.jpg',
+                'livedemo/chatapp/images/cat.jpg',
+                'livedemo/chatapp/images/cow.jpg',
+                'livedemo/chatapp/images/donky.jpg',
+                'livedemo/chatapp/images/duck.jpg',
+                'livedemo/chatapp/images/lion.jpg',
+                'livedemo/chatapp/images/penguin.jpg',
+                'livedemo/chatapp/images/sea_lion.jpg',
             ],
             currentAvatar: 'images/bewer.jpg',
             index: 7,
@@ -51,7 +51,7 @@ export default {
             this.currentAvatar = this.avatars[i]
         },
         login () {
-            axios.post('/auth/login', {
+            axios.post('/livedemo/chatapp/auth/login', {
                 username: this.username,
                 password: this.password
             })
@@ -60,7 +60,7 @@ export default {
                     localforage.setItem('user', response.data.user), 
                     localforage.setItem('jwt', response.data.jwt)
                 ]).then(() => {
-                    window.location.replace('/app')
+                    window.location.replace('/livedemo/chatapp/app')
                 })
                 
             })

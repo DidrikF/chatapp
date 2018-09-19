@@ -2743,7 +2743,7 @@ exports.default = {
     logout: function logout() {
       var _this4 = this;
 
-      _axios2.default.post('/auth/logout').then(function (response) {
+      _axios2.default.post('/livedemo/chatapp/auth/logout').then(function (response) {
         _this4.user = null;
         _this4.jwt = null;
         Promise.all([_localforage2.default.removeItem('user'), _localforage2.default.removeItem('jwt')]).then(function () {

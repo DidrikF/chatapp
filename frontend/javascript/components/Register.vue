@@ -1,8 +1,8 @@
 <template>
     <main class="register">
         <nav class="navigation">
-            <a href="/login">Login</a>
-            <a href="/app">Chat</a>
+            <a href="/livedemo/chatapp/login">Login</a>
+            <a href="/livedemo/chatapp/app">Chat</a>
         </nav>
         <div class="form">
             <img class="selectedAvatar" v-bind:src="selectedAvatar" alt="">
@@ -37,27 +37,27 @@ export default {
             selectedAvatar: 'images/bewer.jpg',
             errors: null,
             avatars: [
-                'images/bewer.jpg',
-                'images/cat.jpg',
-                'images/cow.jpg',
-                'images/donky.jpg',
-                'images/duck.jpg',
-                'images/lion.jpg',
-                'images/penguin.jpg',
-                'images/sea_lion.jpg',
+                'livedemo/chatapp/images/bewer.jpg',
+                'livedemo/chatapp/images/cat.jpg',
+                'livedemo/chatapp/images/cow.jpg',
+                'livedemo/chatapp/images/donky.jpg',
+                'livedemo/chatapp/images/duck.jpg',
+                'livedemo/chatapp/images/lion.jpg',
+                'livedemo/chatapp/images/penguin.jpg',
+                'livedemo/chatapp/images/sea_lion.jpg',
             ]
         }
     },
     methods: {
         register () {
-            axios.post('/auth/register', {
+            axios.post('/livedemo/chatapp/auth/register', {
                 image: this.selectedAvatar,
                 username: this.username,
                 password: this.password
             })
             .then((response) => {
                 this.register.errors = null
-                window.location.replace("/login")            
+                window.location.replace("/livedemo/chatapp/login")            
             })
             .catch((error) => {
                 this.errors = error.response.data

@@ -13,29 +13,29 @@ mongoose.connect(process.env.DATABASE_URL).then(async (db) => {
 	var chatapp = await new User({
 		username: 'chatapp',
 		password: 'password123',
-		image: 'images/bot.png'
+		image: 'livedemo/chatapp/images/bot.png'
 	}).save()
 	var alexbot = await new User({
 		username: 'Alex Bot',
 		password: 'password123',
-		image: 'images/bot.png'
+		image: 'livedemo/chatapp/images/bot.png'
 	}).save()
 
 	console.log('created user')
 	const globalRoom = await new Room ({
-		image: 'images/rooms/pets_dogs_animals.png',
+		image: 'livedemo/chatapp/images/rooms/pets_dogs_animals.png',
 		name: 'Global',
 		owner: chatapp,
 	}).save()
 	console.log('created global')
 	const gamingRoom = await new Room({
-		image: 'images/rooms/pets_dogs_animals.png',
+		image: 'livedemo/chatapp/images/rooms/pets_dogs_animals.png',
 		name: 'Gaming',
 		owner: chatapp,
 	}).save()
 	console.log('created gaming')
 	const codingRoom = await new Room({
-		image: 'images/rooms/pets_dogs_animals.png',
+		image: 'livedemo/chatapp/images/rooms/pets_dogs_animals.png',
 		name: 'Coding',
 		owner: chatapp,
 	}).save()
