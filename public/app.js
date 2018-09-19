@@ -2747,17 +2747,17 @@ exports.default = {
         _this4.user = null;
         _this4.jwt = null;
         Promise.all([_localforage2.default.removeItem('user'), _localforage2.default.removeItem('jwt')]).then(function () {
-          window.location.replace('/');
+          window.location.replace('/livedemo/chatapp/');
         });
       }).catch(function (error) {
         console.log(error);
       });
     },
     login: function login() {
-      window.location.replace('/login');
+      window.location.replace('/livedemo/chatapp/login');
     },
     register: function register() {
-      window.location.replace('/');
+      window.location.replace('/livedemo/chatapp/');
     },
     toggleGlobalRoom: function toggleGlobalRoom() {
       var globalRoom = this.rooms.find(function (room) {

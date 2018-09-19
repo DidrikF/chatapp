@@ -246,7 +246,7 @@ export default {
           localforage.removeItem('user'), 
           localforage.removeItem('jwt')
         ]).then(() => {
-            window.location.replace('/')
+            window.location.replace('/livedemo/chatapp/')
         })
         
       })
@@ -255,10 +255,10 @@ export default {
       })
     },
     login () {
-      window.location.replace('/login')
+      window.location.replace('/livedemo/chatapp/login')
     },
     register () {
-      window.location.replace('/')
+      window.location.replace('/livedemo/chatapp/')
     },
     toggleGlobalRoom() {
       const globalRoom = this.rooms.find((room) => {

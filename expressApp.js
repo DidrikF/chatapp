@@ -28,6 +28,10 @@ app.use(cookieParser()) //Parse Cookie header and populate req.cookies with an o
 /* Register router */
 let router = express.Router();
 
+router.get('/livedemo/chatapp/error', function(request, response) {
+  response.render('error', {error: new Error('An error message!')});
+})
+
 /* GET home page. */
 router.get('/livedemo/chatapp/', function(request, response) {
   response.render('register');
