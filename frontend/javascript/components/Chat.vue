@@ -63,7 +63,7 @@
           <div class="name"><i class="fas fa-user-plus"></i><span>Register</span></div>
         </div>
         <div class="option" @click="home">
-          <div class="name"><i class="fas fa-user-plus"></i><span>DidrikFleischer.com</span></div>
+          <div class="name"><i class="fas fa-home"></i><span>DidrikFleischer.com</span></div>
         </div>
       </div>
     </div>
