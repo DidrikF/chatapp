@@ -3,6 +3,7 @@
         <nav class="navigation">
             <a href="/livedemo/chatapp/login">Login</a>
             <a href="/livedemo/chatapp/app">Chat</a>
+            <a href="/">DidrikFleischer.com</a>
         </nav>
         <div class="form">
             <img class="selectedAvatar" v-bind:src="selectedAvatar" alt="">

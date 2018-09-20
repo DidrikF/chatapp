@@ -62,6 +62,9 @@
         <div class="option" @click="register">
           <div class="name"><i class="fas fa-user-plus"></i><span>Register</span></div>
         </div>
+        <div class="option" @click="home">
+          <div class="name"><i class="fas fa-user-plus"></i><span>DidrikFleischer.com</span></div>
+        </div>
       </div>
     </div>
     
@@ -228,7 +231,6 @@ export default {
       this.$sockets["chat"].socket.connect()
 
       this.$sockets["chat"].socket.emit("joinChat", {jwt: this.jwt});
-      if (!this.user) this.sock("chat").emit("fetchUser", {jwt: this.jwt});
     }).catch((error) => {
       console.log(error)
     })
@@ -259,6 +261,9 @@ export default {
     },
     register () {
       window.location.replace('/livedemo/chatapp/')
+    },
+    home () {
+      window.location.replace('/')
     },
     toggleGlobalRoom() {
       const globalRoom = this.rooms.find((room) => {

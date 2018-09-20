@@ -2679,6 +2679,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
+//
+//
 
 
 exports.default = {
@@ -2732,7 +2735,6 @@ exports.default = {
       _this3.$sockets["chat"].socket.connect();
 
       _this3.$sockets["chat"].socket.emit("joinChat", { jwt: _this3.jwt });
-      if (!_this3.user) _this3.sock("chat").emit("fetchUser", { jwt: _this3.jwt });
     }).catch(function (error) {
       console.log(error);
     });
@@ -2758,6 +2760,9 @@ exports.default = {
     },
     register: function register() {
       window.location.replace('/livedemo/chatapp/');
+    },
+    home: function home() {
+      window.location.replace('/');
     },
     toggleGlobalRoom: function toggleGlobalRoom() {
       var globalRoom = this.rooms.find(function (room) {
@@ -32220,7 +32225,11 @@ var render = function() {
                 "div",
                 { staticClass: "option", on: { click: _vm.register } },
                 [_vm._m(2)]
-              )
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "option", on: { click: _vm.home } }, [
+                _vm._m(3)
+              ])
             ])
           ])
         ]),
@@ -32448,7 +32457,7 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _vm._m(3),
+      _vm._m(4),
       _vm._v(" "),
       _vm._l(_vm.notifications, function(notification, index) {
         return notification.length
@@ -32489,6 +32498,15 @@ var staticRenderFns = [
     return _c("div", { staticClass: "name" }, [
       _c("i", { staticClass: "fas fa-user-plus" }),
       _c("span", [_vm._v("Register")])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "name" }, [
+      _c("i", { staticClass: "fas fa-user-plus" }),
+      _c("span", [_vm._v("DidrikFleischer.com")])
     ])
   },
   function() {

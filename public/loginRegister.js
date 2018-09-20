@@ -1982,6 +1982,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 //
 //
 //
+//
 
 exports.default = {
     data: function data() {
@@ -2084,6 +2085,7 @@ exports.default = {
         }
     }
 }; //
+//
 //
 //
 //
@@ -5507,7 +5509,9 @@ var staticRenderFns = [
     return _c("nav", { staticClass: "navigation" }, [
       _c("a", { attrs: { href: "/livedemo/chatapp/" } }, [_vm._v("Register")]),
       _vm._v(" "),
-      _c("a", { attrs: { href: "/livedemo/chatapp/app" } }, [_vm._v("Chat")])
+      _c("a", { attrs: { href: "/livedemo/chatapp/app" } }, [_vm._v("Chat")]),
+      _vm._v(" "),
+      _c("a", { attrs: { href: "/" } }, [_vm._v("DidrikFleischer.com")])
     ])
   },
   function() {
@@ -5639,7 +5643,9 @@ var staticRenderFns = [
         _vm._v("Login")
       ]),
       _vm._v(" "),
-      _c("a", { attrs: { href: "/livedemo/chatapp/app" } }, [_vm._v("Chat")])
+      _c("a", { attrs: { href: "/livedemo/chatapp/app" } }, [_vm._v("Chat")]),
+      _vm._v(" "),
+      _c("a", { attrs: { href: "/" } }, [_vm._v("DidrikFleischer.com")])
     ])
   },
   function() {

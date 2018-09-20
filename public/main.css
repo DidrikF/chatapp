@@ -22,7 +22,7 @@ body, html {
   font: 14px/20px "Lato", Arial, sans-serif;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, #e66465, #9198e5); }
+  background: linear-gradient(45deg, #007991, #78ffd6); }
 
 main {
   border-radius: 10px;
@@ -88,7 +88,7 @@ main {
     border-bottom: 1px solid darkgrey;
     border-top: 1px solid darkgrey; }
   .menu .scroll-navigation .element:hover {
-    background: linear-gradient(45deg, #9198e5, #e66465); }
+    background-color: #007991; }
   .menu .scroll-navigation .element {
     padding: 5px 0 5px 20px;
     position: relative;
